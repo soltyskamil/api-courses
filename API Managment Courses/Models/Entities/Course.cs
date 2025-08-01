@@ -5,9 +5,9 @@ public class Course
     public string Title{ get; set; }
     public string Description{ get; set; }
 
-    public ICollection<Lesson> Lessons { get; set; } = new List<Lesson>();
+    public IEnumerable<Lesson> Lessons { get; set; } = new List<Lesson>();
 
-    public ICollection<CourseEnrollment> CourseEnrollments { get; set; } = new List<CourseEnrollment>();
+    public IEnumerable<CourseEnrollment> CourseEnrollments { get; set; } = new List<CourseEnrollment>();
 
 }
 

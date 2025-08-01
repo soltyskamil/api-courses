@@ -19,7 +19,7 @@ namespace API_Managment_Courses.Controllers
 
         [HttpGet]
 
-        public async Task<ActionResult<Course>> GetCourses()
+        public async Task<ActionResult<IEnumerable<CourseDto>>> GetCourses()
         {
             try
             {
@@ -35,7 +35,7 @@ namespace API_Managment_Courses.Controllers
 
         [HttpGet("{id}")]
 
-        public async Task<ActionResult<Course>> GetSingle(int id)
+        public async Task<ActionResult<CourseDto>> GetSingle(int id)
         {
             try
             {
@@ -49,6 +49,7 @@ namespace API_Managment_Courses.Controllers
             }
 
         }
+
 
         [HttpPost]
 
@@ -82,10 +83,10 @@ namespace API_Managment_Courses.Controllers
                 return StatusCode(404, ex.Message);
             }
         }
-        // api/courses/courseId?=4
+
         [HttpPost("{courseId}/assign/{userId}")]
 
-        public async Task<ActionResult<Course>> AssignToUser(int courseId, int userId)
+        public async Task<ActionResult> AssignToUser(int courseId, int userId)
         {
             try
             {

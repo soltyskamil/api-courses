@@ -85,7 +85,9 @@ public class AppDbContext : DbContext
             .HasData(
             new Course { ID = 1, Title = "Przykładowy tytuł kursu", Description = "Przykładowy opis kursu" },
             new Course { ID = 2, Title = "Przykładowy tytuł drugiego kursu", Description = "Przykładowy drugiego opis kursu" },
-            new Course { ID = 3, Title = "Przykładowy tytuł trzeciego kursu", Description = "Przykładowy trzeciego opis kursu" }
+            new Course { ID = 3, Title = "Przykładowy tytuł trzeciego kursu", Description = "Przykładowy trzeciego opis kursu" },
+            new Course { ID = 4, Title = "Przykładowy tytuł czwartego kursu", Description = "Przykładowy opis czwartego kursu" },
+            new Course { ID = 5, Title = "Przykładowy tytuł piątego kursu", Description = "Przykładowy opis czwartego kursu" }
             );
 
         modelBuilder.Entity<CourseEnrollment>()
@@ -96,7 +98,9 @@ public class AppDbContext : DbContext
           .HasData(
           new Lesson { ID = 1,Title = "Przykładowy tytuł lekcji", Description = "Przykładowy opis lekcji", CourseID = 1 },
           new Lesson { ID = 2,Title = "Przykładowy tytuł drugiego lekcji", Description = "Przykładowy drugiego opis lekcji", CourseID = 2 },
-          new Lesson { ID = 3,Title = "Przykładowy tytuł trzeciego lekcji", Description = "Przykładowy trzeciego opis lekcji", CourseID = 3 }
+          new Lesson { ID = 3,Title = "Przykładowy tytuł trzeciego lekcji", Description = "Przykładowy trzeciego opis lekcji", CourseID = 3 },
+          new Lesson { ID = 4, Title = "Przykładowy tytuł czwartego lekcji", Description = "Przykładowy czwartego opis lekcji", CourseID = 4 },
+          new Lesson { ID = 5, Title = "Przykładowy tytuł piątego lekcji", Description = "Przykładowy piątego opis lekcji", CourseID = 5 }
           );
 
 

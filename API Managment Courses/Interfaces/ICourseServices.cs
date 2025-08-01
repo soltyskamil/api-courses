@@ -4,9 +4,9 @@ namespace API_Managment_Courses.Interfaces
 {
     public interface ICourseServices
     {
-         Task<List<Course>> GetAll();
+         Task<IEnumerable<CourseDto>> GetAll();
 
-        Task<Course> GetSingle(int id);
+        Task<CourseDto> GetSingle(int id);
 
         Task<Course> CreateCourse(CreateCourseDto dto);
 

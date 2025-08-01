@@ -6,9 +6,7 @@ public class User
 
     public UserProfile Profile { get; set; }
 
-    //public List<Course> Courses { get; set; }
-
-    public ICollection<CourseEnrollment> CourseEnrollments { get; set; } = new List<CourseEnrollment>();
+    public IEnumerable<CourseEnrollment> CourseEnrollments { get; set; } = new List<CourseEnrollment>();
 
 
 }

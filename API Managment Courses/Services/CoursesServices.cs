@@ -2,27 +2,36 @@
 using Microsoft.EntityFrameworkCore;
 using API_Managment_Courses.Dtos;
 using API_Managment_Courses.Interfaces;
+using AutoMapper;
 namespace API_Managment_Courses.Services
 {
     public class CoursesServices : ICourseServices
     {
         private readonly AppDbContext _context;
+        private readonly IMapper _mapper;
 
-        public CoursesServices(AppDbContext context)
+
+        public CoursesServices(AppDbContext context, IMapper mapper)
         {
+            _mapper = mapper;
             _context = context;
         }
 
-        public async Task<List<Course>> GetAll()
+        public async Task<IEnumerable<CourseDto>> GetAll()
         {
-            return await _context.Courses
+            IEnumerable<Course> courses = await _context.Courses
                 .Include(c => c.Lessons)
                 .ToListAsync();
+            return _mapper.Map<IEnumerable<CourseDto>>(courses);
         }
 
-        public async Task<Course> GetSingle(int id)
+        public async Task<CourseDto> GetSingle(int id)
         {
-            return await _context.Courses.FirstOrDefaultAsync(c => c.ID == id);
+            var course = await _context.Courses
+                .Include(c => c.Lessons)
+                .FirstOrDefaultAsync(c => c.ID == id);
+            return _mapper.Map<CourseDto>(course);
+
         }
 
 
@@ -52,7 +61,7 @@ namespace API_Managment_Courses.Services
 
         public async Task AssignToUser(int courseId, int userId)
         {
-            var user = _context.Users.FirstOrDefaultAsync(u => u.ID == userId);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.ID == userId);
 
 
             if (!await _context.Users.AnyAsync(u => u.ID == userId))
@@ -63,7 +72,7 @@ namespace API_Managment_Courses.Services
                 throw new Exception("Course not found");
 
 
-            if (!await _context.CourseEnrollments.AnyAsync(c => c.UserID == userId && c.CourseID == courseId))
+            if (await _context.CourseEnrollments.AnyAsync(c => (c.UserID == userId && c.CourseID == courseId)))
                 throw new Exception("Already assigned");
 
 

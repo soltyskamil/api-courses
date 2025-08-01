@@ -17,6 +17,23 @@ namespace API_Managment_Courses.Controllers
             _services = services;
         }
 
+        [HttpPost]
+
+        public async Task<ActionResult<UserDto>> CreateUser([FromBody] UserDto dto)
+        {
+            try
+            {
+                var user = await _services.CreateUser(dto);
+                return Ok(user);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+
+
         [HttpGet]
 
         public async Task<ActionResult<UserDto>> GetAll()
@@ -52,11 +69,11 @@ namespace API_Managment_Courses.Controllers
 
         [HttpGet("{id}/courses")]
 
-        public async Task<ActionResult<ICollection<CourseEnrollment>>> GetUserCourses(int id)
+        public async Task<ActionResult<IEnumerable<CourseDto>>> GetUserCourses(int id)
         {
             try
             {
-                var userCourses = _services.GetUserCourses(id);
+                var userCourses = await _services.GetUserCourses(id);
                 return Ok(userCourses);
             }
 
@@ -64,8 +81,22 @@ namespace API_Managment_Courses.Controllers
             {
                 return StatusCode(404, ex.Message);
             }
-
-
         }
+
+        [HttpDelete("{id}")]
+
+        public async Task<ActionResult> DeleteUser(int id)
+        {
+            try
+            {
+                await _services.DeleteUser(id);
+                return Ok($"Użytkownik o id {id} został usunięty");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(404, ex.Message);
+            }
+        }
+
     }
 }
