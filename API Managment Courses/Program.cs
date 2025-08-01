@@ -21,6 +21,7 @@ namespace API_Managment_Courses
             builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
             builder.Services.AddScoped<ICourseServices, CoursesServices>();
             builder.Services.AddScoped<IUserServices, UserServices>();
+            builder.Services.AddScoped<ILessonsServices, LessonsServices>();
 
 
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi

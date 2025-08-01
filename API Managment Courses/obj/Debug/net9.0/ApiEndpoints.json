@@ -119,6 +119,64 @@
     ]
   },
   {
+    "ContainingType": "API_Managment_Courses.Controllers.LessonsController",
+    "Method": "CreateLesson",
+    "RelativePath": "api/Lessons",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "API_Managment_Courses.Dtos.CreateLessonDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Managment_Courses.Controllers.LessonsController",
+    "Method": "DeleteLesson",
+    "RelativePath": "api/Lessons/{lessonID}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "lessonID",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Managment_Courses.Controllers.LessonsController",
+    "Method": "GetLessonById",
+    "RelativePath": "api/Lessons/{lessonID}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "lessonID",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "API_Managment_Courses.Dtos.LessonDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
     "ContainingType": "API_Managment_Courses.Controllers.UsersController",
     "Method": "CreateUser",
     "RelativePath": "api/Users",
