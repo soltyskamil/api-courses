@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace API_Managment_Courses.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialMigration : Migration
+    public partial class initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -25,6 +25,19 @@ namespace API_Managment_Courses.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Courses", x => x.ID);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Roles",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Roles", x => x.ID);
                 });
 
             migrationBuilder.CreateTable(
@@ -106,53 +119,13 @@ namespace API_Managment_Courses.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "Courses",
-                columns: new[] { "ID", "Description", "Title" },
+                table: "Roles",
+                columns: new[] { "ID", "Name" },
                 values: new object[,]
                 {
-                    { 1, "Przykładowy opis kursu", "Przykładowy tytuł kursu" },
-                    { 2, "Przykładowy drugiego opis kursu", "Przykładowy tytuł drugiego kursu" },
-                    { 3, "Przykładowy trzeciego opis kursu", "Przykładowy tytuł trzeciego kursu" }
-                });
-
-            migrationBuilder.InsertData(
-                table: "Users",
-                columns: new[] { "ID", "Email" },
-                values: new object[,]
-                {
-                    { 1, "kamils3542@gmail.com" },
-                    { 2, "kamils35422@gmail.com" },
-                    { 3, "kamils354222@gmail.com" }
-                });
-
-            migrationBuilder.InsertData(
-                table: "CourseEnrollments",
-                columns: new[] { "CourseID", "UserID" },
-                values: new object[,]
-                {
-                    { 1, 1 },
-                    { 2, 2 },
-                    { 3, 3 }
-                });
-
-            migrationBuilder.InsertData(
-                table: "Lessons",
-                columns: new[] { "ID", "CourseID", "Description", "Title" },
-                values: new object[,]
-                {
-                    { 1, 1, "Przykładowy opis lekcji", "Przykładowy tytuł lekcji" },
-                    { 2, 2, "Przykładowy drugiego opis lekcji", "Przykładowy tytuł drugiego lekcji" },
-                    { 3, 3, "Przykładowy trzeciego opis lekcji", "Przykładowy tytuł trzeciego lekcji" }
-                });
-
-            migrationBuilder.InsertData(
-                table: "UserProfiles",
-                columns: new[] { "ID", "DateOfBirth", "Name", "Surname" },
-                values: new object[,]
-                {
-                    { 1, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Kamil", "Sołtys" },
-                    { 2, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Andrzej", "Lepper" },
-                    { 3, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Tomek", "Wielki" }
+                    { 1, "Student" },
+                    { 2, "Premium" },
+                    { 3, "Admin" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -174,6 +147,9 @@ namespace API_Managment_Courses.Migrations
 
             migrationBuilder.DropTable(
                 name: "Lessons");
+
+            migrationBuilder.DropTable(
+                name: "Roles");
 
             migrationBuilder.DropTable(
                 name: "UserProfiles");

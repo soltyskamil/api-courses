@@ -67,12 +67,14 @@ namespace API_Managment_Courses.Services
             var user = await _context.Users
                                 .Include(u => u.CourseEnrollments)
                                 .ThenInclude(c => c.Course)
+                                .ThenInclude(c => c.Lessons)
+                                .AsSingleQuery()
                                 .FirstOrDefaultAsync(u => u.ID == id);
-                                
+
 
             IEnumerable<CourseEnrollment> userCourses = user.CourseEnrollments;
 
-        
+
             return _mapper.Map<IEnumerable<CourseDto>>(userCourses);
         }
 

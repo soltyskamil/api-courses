@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using API_Managment_Courses.Dtos;
 using API_Managment_Courses.Interfaces;
 using AutoMapper;
+using Microsoft.IdentityModel.Tokens;
 namespace API_Managment_Courses.Services
 {
     public class CoursesServices : ICourseServices
@@ -22,6 +23,9 @@ namespace API_Managment_Courses.Services
             IEnumerable<Course> courses = await _context.Courses
                 .Include(c => c.Lessons)
                 .ToListAsync();
+
+
+
             return _mapper.Map<IEnumerable<CourseDto>>(courses);
         }
 
@@ -50,12 +54,11 @@ namespace API_Managment_Courses.Services
 
         public async Task DeleteCourse(int courseId)
         {
-            if (!await _context.Courses.AnyAsync(c => c.ID == courseId)) throw new Exception("Course not found");
             var course = await _context.Courses.FirstOrDefaultAsync(c => c.ID == courseId);
 
             _context.Courses.Remove(course);
             await _context.SaveChangesAsync();
-            
+
 
         }
 

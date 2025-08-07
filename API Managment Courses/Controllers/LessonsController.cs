@@ -1,10 +1,11 @@
 ﻿using API_Managment_Courses.Dtos;
 using API_Managment_Courses.Interfaces;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-
+using API_Managment_Courses.Models.Api;
+using API_Managment_Courses.Filters;
 namespace API_Managment_Courses.Controllers
 {
-
 
     [Route("api/[controller]")]
     [ApiController]
@@ -21,15 +22,28 @@ namespace API_Managment_Courses.Controllers
 
         public async Task<ActionResult> CreateLesson([FromBody] CreateLessonDto dto)
         {
+
             try
             {
                 await _services.CreateLesson(dto);
-                return Ok($"Lekcja została dodana");
-            }
+                return Ok(new ApiResponse<object>
+                {
+                    data = dto,
+                    success = true,
+                    message = $"Lekcja została pomyślnie dodana do kursu {dto.CourseID}",
+                    errors = null
+                });
 
-            catch (Exception ex)
+            }
+            catch(Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                return StatusCode(404, new ApiResponse<object>
+                {
+                    data = dto,
+                    success = false,
+                    message = ex.Message,
+                    errors = null
+                });
             }
         }
 
@@ -40,12 +54,12 @@ namespace API_Managment_Courses.Controllers
             try
             {
                 await _services.DeleteLesson(lessonID);
-                return Ok($"Lekcja o id {lessonID} została usunięta");
+                return Ok(new {message = $"Lekcja {lessonID} została pomyślnie usunięta", success = true });
             }
 
             catch (Exception ex)
             {
-                return StatusCode(404, ex.Message);
+                return StatusCode(404, new {message = ex.Message, success = false});
             }
         }
 
@@ -56,12 +70,12 @@ namespace API_Managment_Courses.Controllers
             try
             {
                 var lesson = await _services.GetLessonById(lessonID);
-                return Ok(lesson);
+                return Ok(new {message = $"{lessonID} została pomyślnie dodana", success = true});
             }
 
             catch (Exception ex)
             {
-                return StatusCode(404, new { message = $"Nie znaleziono lekcji o id {lessonID}" });
+                return StatusCode(404, new { message = ex.Message, success = false });
             }
 
         }

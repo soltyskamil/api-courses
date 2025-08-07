@@ -16,8 +16,12 @@ namespace API_Managment_Courses.Services
             _mapper = mapper;
         }
 
+        
         public async Task CreateLesson(CreateLessonDto dto)
         {
+            if (!await _context.Courses.AnyAsync(c => c.ID == dto.CourseID)) throw new KeyNotFoundException("Course not Found");
+
+
             Lesson newLesson = new Lesson
             {
                 Description = dto.Description,

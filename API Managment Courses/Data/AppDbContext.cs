@@ -1,4 +1,5 @@
 ﻿
+using API_Managment_Courses.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.SqlServer.Server;
 
@@ -14,6 +15,8 @@ public class AppDbContext : DbContext
 
     public DbSet<CourseEnrollment> CourseEnrollments { get; set; }
     public DbSet<UserProfile> UserProfiles { get; set; }
+
+    public DbSet<Role> Roles { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -65,6 +68,13 @@ public class AppDbContext : DbContext
             .Property(l => l.Description)
             .IsRequired()
             .HasMaxLength(200);
+
+        modelBuilder.Entity<Role>()
+            .HasData(
+            new Role { ID = 1, Name = "Student" }, 
+            new Role { ID = 2, Name = "Premium" }, 
+            new Role { ID = 3, Name = "Admin" }
+        );
 
     }
 }

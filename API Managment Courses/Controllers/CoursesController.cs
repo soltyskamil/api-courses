@@ -2,6 +2,7 @@
 using API_Managment_Courses.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 namespace API_Managment_Courses.Controllers
 {
@@ -24,12 +25,15 @@ namespace API_Managment_Courses.Controllers
             try
             {
                 var courses = await _services.GetAll();
-                return Ok(courses);
+                if (courses.IsNullOrEmpty()) return BadRequest(new { message = "Tablica kursów jest pusta", success = false });
+
+
+                return Ok(new { data = courses, success = true });
 
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                return StatusCode(500, new { message = ex.Message, success = false });
             }
         }
 
@@ -40,12 +44,13 @@ namespace API_Managment_Courses.Controllers
             try
             {
                 var course = await _services.GetSingle(id);
-                return Ok(course);
+                if (course == null) return BadRequest(new { message = $"Nie znaleziono kursu o id {id}", success = false });
+                return Ok(new { data = course, success = true });
             }
 
             catch (Exception ex)
             {
-                return StatusCode(404, ex.Message);
+                return StatusCode(404, new { message = ex.Message, success = false });
             }
 
         }
@@ -58,29 +63,30 @@ namespace API_Managment_Courses.Controllers
             try
             {
                 var course = await _services.CreateCourse(dto);
-                return Ok(new { message = $"{course.Title} has been created" });
+                return Ok(new { message = $"{course.Title} has been created", success = true });
             }
 
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                return StatusCode(500, new { message = ex.Message, success = false });
             }
         }
 
 
         [HttpDelete("{id}")]
 
-        public async Task<ActionResult<Course>> DeleteCourse(int id)
+        public async Task<ActionResult> DeleteCourse(int id)
         {
             try
             {
+
                 await _services.DeleteCourse(id);
-                return Ok("Course has been deleted");
+                return Ok(new { message = $"Kurs o id {id} został pomyślnie usunięty", success = true });
             }
 
             catch (Exception ex)
             {
-                return StatusCode(404, ex.Message);
+                return StatusCode(404, new { message = $"Nie znaleziono kursu o id {id}", success = false });
             }
         }
 
@@ -90,13 +96,25 @@ namespace API_Managment_Courses.Controllers
         {
             try
             {
+
+
                 await _services.AssignToUser(courseId, userId);
-                return Ok(new { message = $"{userId} has been assigned to course {courseId}" });
+                return Ok(new { message = $"Użytkownik o id {userId} został pomyślnie zapisany do kursu o id {courseId}", success = true });
             }
 
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                switch (ex.Message)
+                {
+                    case "User not found":
+                    case "Course not found":
+                        return NotFound(new { message = ex.Message, success = false });
+                    case "Already assigned":
+                        return Conflict(new { message = ex.Message, success = false });
+                    default:
+                        return StatusCode(500, new { message = ex.Message, success = false });
+                }
+
 
             }
         }

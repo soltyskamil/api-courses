@@ -1,7 +1,11 @@
 
+using API_Managment_Courses.Filters;
 using API_Managment_Courses.Interfaces;
 using API_Managment_Courses.Mapping;
+using API_Managment_Courses.Models.Api;
 using API_Managment_Courses.Services;
+using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 
@@ -16,12 +20,23 @@ namespace API_Managment_Courses
 
             // Add services to the container.
 
-            builder.Services.AddControllers();
             builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
             builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
             builder.Services.AddScoped<ICourseServices, CoursesServices>();
             builder.Services.AddScoped<IUserServices, UserServices>();
             builder.Services.AddScoped<ILessonsServices, LessonsServices>();
+            builder.Services.AddScoped<IAuthServices, AuthServices>();
+            builder.Services.AddScoped<ValidationFilterAttribute>();
+            builder.Services.AddScoped<GlobalExceptionFilter>();
+            builder.Services.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
+
+            builder.Services.AddControllers(options =>
+            {
+                options.Filters.AddService<ValidationFilterAttribute>();
+                options.Filters.AddService<GlobalExceptionFilter>();  
+            }
+            );
+
 
 
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -38,6 +53,8 @@ namespace API_Managment_Courses
             }
 
             app.UseHttpsRedirection();
+      
+         
 
             app.UseAuthorization();
 

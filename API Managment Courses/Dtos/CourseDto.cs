@@ -7,8 +7,7 @@
 
         public string Description { get; set; }
 
-        //public IEnumerable<LessonDto> Lessons  { get; set; }
-
+        public IEnumerable<LessonDto> Lessons  { get; set; }
 
     }
 }

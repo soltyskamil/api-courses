@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API_Managment_Courses.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250730155236_InitialMigration")]
-    partial class InitialMigration
+    [Migration("20250806183144_AdjustedRoleEntity")]
+    partial class AdjustedRoleEntity
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -23,6 +23,40 @@ namespace API_Managment_Courses.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("API_Managment_Courses.Models.Entities.Role", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Roles");
+
+                    b.HasData(
+                        new
+                        {
+                            ID = 1,
+                            Name = "Student"
+                        },
+                        new
+                        {
+                            ID = 2,
+                            Name = "Premium"
+                        },
+                        new
+                        {
+                            ID = 3,
+                            Name = "Admin"
+                        });
+                });
 
             modelBuilder.Entity("Course", b =>
                 {
@@ -43,26 +77,6 @@ namespace API_Managment_Courses.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("Courses");
-
-                    b.HasData(
-                        new
-                        {
-                            ID = 1,
-                            Description = "Przykładowy opis kursu",
-                            Title = "Przykładowy tytuł kursu"
-                        },
-                        new
-                        {
-                            ID = 2,
-                            Description = "Przykładowy drugiego opis kursu",
-                            Title = "Przykładowy tytuł drugiego kursu"
-                        },
-                        new
-                        {
-                            ID = 3,
-                            Description = "Przykładowy trzeciego opis kursu",
-                            Title = "Przykładowy tytuł trzeciego kursu"
-                        });
                 });
 
             modelBuilder.Entity("CourseEnrollment", b =>
@@ -78,23 +92,6 @@ namespace API_Managment_Courses.Migrations
                     b.HasIndex("CourseID");
 
                     b.ToTable("CourseEnrollments");
-
-                    b.HasData(
-                        new
-                        {
-                            UserID = 1,
-                            CourseID = 1
-                        },
-                        new
-                        {
-                            UserID = 2,
-                            CourseID = 2
-                        },
-                        new
-                        {
-                            UserID = 3,
-                            CourseID = 3
-                        });
                 });
 
             modelBuilder.Entity("Lesson", b =>
@@ -123,29 +120,6 @@ namespace API_Managment_Courses.Migrations
                     b.HasIndex("CourseID");
 
                     b.ToTable("Lessons");
-
-                    b.HasData(
-                        new
-                        {
-                            ID = 1,
-                            CourseID = 1,
-                            Description = "Przykładowy opis lekcji",
-                            Title = "Przykładowy tytuł lekcji"
-                        },
-                        new
-                        {
-                            ID = 2,
-                            CourseID = 2,
-                            Description = "Przykładowy drugiego opis lekcji",
-                            Title = "Przykładowy tytuł drugiego lekcji"
-                        },
-                        new
-                        {
-                            ID = 3,
-                            CourseID = 3,
-                            Description = "Przykładowy trzeciego opis lekcji",
-                            Title = "Przykładowy tytuł trzeciego lekcji"
-                        });
                 });
 
             modelBuilder.Entity("User", b =>
@@ -161,26 +135,18 @@ namespace API_Managment_Courses.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("RoleID")
+                        .HasColumnType("int");
+
                     b.HasKey("ID");
 
-                    b.ToTable("Users");
+                    b.HasIndex("RoleID");
 
-                    b.HasData(
-                        new
-                        {
-                            ID = 1,
-                            Email = "kamils3542@gmail.com"
-                        },
-                        new
-                        {
-                            ID = 2,
-                            Email = "kamils35422@gmail.com"
-                        },
-                        new
-                        {
-                            ID = 3,
-                            Email = "kamils354222@gmail.com"
-                        });
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("UserProfile", b =>
@@ -204,29 +170,6 @@ namespace API_Managment_Courses.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("UserProfiles");
-
-                    b.HasData(
-                        new
-                        {
-                            ID = 1,
-                            DateOfBirth = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Kamil",
-                            Surname = "Sołtys"
-                        },
-                        new
-                        {
-                            ID = 2,
-                            DateOfBirth = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Andrzej",
-                            Surname = "Lepper"
-                        },
-                        new
-                        {
-                            ID = 3,
-                            DateOfBirth = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Tomek",
-                            Surname = "Wielki"
-                        });
                 });
 
             modelBuilder.Entity("CourseEnrollment", b =>
@@ -257,6 +200,17 @@ namespace API_Managment_Courses.Migrations
                         .IsRequired();
 
                     b.Navigation("Course");
+                });
+
+            modelBuilder.Entity("User", b =>
+                {
+                    b.HasOne("API_Managment_Courses.Models.Entities.Role", "Role")
+                        .WithMany()
+                        .HasForeignKey("RoleID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Role");
                 });
 
             modelBuilder.Entity("UserProfile", b =>

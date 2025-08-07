@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API_Managment_Courses.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250806181715_UserEntityPasswordHash")]
+    partial class UserEntityPasswordHash
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -33,6 +36,9 @@ namespace API_Managment_Courses.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("UserID")
+                        .HasColumnType("int");
+
                     b.HasKey("ID");
 
                     b.ToTable("Roles");
@@ -41,17 +47,20 @@ namespace API_Managment_Courses.Migrations
                         new
                         {
                             ID = 1,
-                            Name = "Student"
+                            Name = "Student",
+                            UserID = 0
                         },
                         new
                         {
                             ID = 2,
-                            Name = "Premium"
+                            Name = "Premium",
+                            UserID = 0
                         },
                         new
                         {
                             ID = 3,
-                            Name = "Admin"
+                            Name = "Admin",
+                            UserID = 0
                         });
                 });
 
@@ -141,7 +150,8 @@ namespace API_Managment_Courses.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("RoleID");
+                    b.HasIndex("RoleID")
+                        .IsUnique();
 
                     b.ToTable("Users");
                 });
@@ -202,8 +212,8 @@ namespace API_Managment_Courses.Migrations
             modelBuilder.Entity("User", b =>
                 {
                     b.HasOne("API_Managment_Courses.Models.Entities.Role", "Role")
-                        .WithMany()
-                        .HasForeignKey("RoleID")
+                        .WithOne("User")
+                        .HasForeignKey("User", "RoleID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -219,6 +229,12 @@ namespace API_Managment_Courses.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("API_Managment_Courses.Models.Entities.Role", b =>
+                {
+                    b.Navigation("User")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Course", b =>

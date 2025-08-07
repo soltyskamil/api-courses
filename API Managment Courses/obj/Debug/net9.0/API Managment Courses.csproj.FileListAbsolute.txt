@@ -168,3 +168,4 @@ C:\Users\kamil\source\repos\API Managment Courses\API Managment Courses\bin\Debu
 C:\Users\kamil\source\repos\API Managment Courses\API Managment Courses\obj\Debug\net9.0\API Managment Courses.sourcelink.json
 C:\Users\kamil\source\repos\API Managment Courses\API Managment Courses\bin\Debug\net9.0\AutoMapper.dll
 C:\Users\kamil\source\repos\API Managment Courses\API Managment Courses\bin\Debug\net9.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll
+C:\Users\kamil\source\repos\API Managment Courses\API Managment Courses\bin\Debug\net9.0\BCrypt.Net-Next.dll
