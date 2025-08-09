@@ -37,6 +37,16 @@
   },
   {
     "ContainingType": "API_Managment_Courses.Controllers.AuthController",
+    "Method": "LogoutUser",
+    "RelativePath": "api/Auth/logout",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Managment_Courses.Controllers.AuthController",
     "Method": "CreateUser",
     "RelativePath": "api/Auth/register",
     "HttpMethod": "POST",

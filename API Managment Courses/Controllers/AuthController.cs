@@ -27,7 +27,12 @@ namespace API_Managment_Courses.Controllers
             try
             {
                 var userDto = await _services.CreateUser(dto);
-                return Ok(userDto);
+
+                LoginUserDto userLogin = new LoginUserDto { Email = dto.Email, Password = dto.password };
+                await _services.LoginUser(userLogin);
+                HttpContext.Session.SetString("UserMail", userLogin.Email);
+
+                return Ok(new { message = userDto });
             }
 
             catch (Exception ex)
@@ -39,11 +44,13 @@ namespace API_Managment_Courses.Controllers
 
         [HttpPost("login")]
 
-        public async Task<ActionResult> LoginUser(LoginUserDto dto)
+        public async Task<ActionResult> LoginUser([FromBody] LoginUserDto dto)
         {
             try
             {
                 await _services.LoginUser(dto);
+                HttpContext.Session.SetString("UserMail", dto.Email);
+
                 return Ok(dto);
             }
 
@@ -54,12 +61,33 @@ namespace API_Managment_Courses.Controllers
             }
         }
 
+        [HttpPost("logout")]
+
+        public async Task<ActionResult> LogoutUser()
+        {
+            try
+            {
+                HttpContext.Session.Clear();
+                return Ok(new { message = "Pomyślnie wylogowano" });
+            }
+
+            catch (Exception ex)
+            {
+                return StatusCode(400, ex.Message);
+            }
+
+        }
+
         [HttpGet]
 
         public async Task<ActionResult<IEnumerable<UserDto>>> GetAll()
         {
             try
             {
+                var userEmail = HttpContext.Session.GetString("UserMail");
+                if (string.IsNullOrEmpty(userEmail)) { return Unauthorized(); }
+
+
                 var users = await _services.GetAll();
                 return Ok(users);
 

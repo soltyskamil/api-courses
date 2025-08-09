@@ -33,9 +33,20 @@ namespace API_Managment_Courses
             builder.Services.AddControllers(options =>
             {
                 options.Filters.AddService<ValidationFilterAttribute>();
-                options.Filters.AddService<GlobalExceptionFilter>();  
+                options.Filters.AddService<GlobalExceptionFilter>();
             }
             );
+
+            builder.Services.AddDistributedMemoryCache();
+
+            builder.Services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(60);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+
+            });
+
 
 
 
@@ -53,8 +64,8 @@ namespace API_Managment_Courses
             }
 
             app.UseHttpsRedirection();
-      
-         
+            app.UseSession();
+
 
             app.UseAuthorization();
 

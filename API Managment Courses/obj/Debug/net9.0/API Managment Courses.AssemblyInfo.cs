@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("API Managment Courses")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7f0a446ae45943fa98fbcd921cb41563579d0ff1")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7a79017d445d04bb75bca77fd16ae9f145e28d26")]
 [assembly: System.Reflection.AssemblyProductAttribute("API Managment Courses")]
 [assembly: System.Reflection.AssemblyTitleAttribute("API Managment Courses")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

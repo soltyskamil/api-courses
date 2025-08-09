@@ -20,8 +20,8 @@ namespace API_Managment_Courses.Services
 
         public async Task<UserDto> CreateUser(UserDto dto)
         {
-            if (await _context.Users.AnyAsync(u => u.Email == dto.Email)) throw new Exception("Użytkownik już istnieje");            
-           
+            if (await _context.Users.AnyAsync(u => u.Email == dto.Email)) throw new Exception("Użytkownik już istnieje");
+
             string passwordHash = BCrypt.Net.BCrypt.HashPassword(dto.password);
 
             var newUser = new User()
@@ -46,22 +46,29 @@ namespace API_Managment_Courses.Services
 
             await _context.SaveChangesAsync();
             return _mapper.Map<UserDto>(newUser);
-        } 
+        }
 
 
         public async Task LoginUser(LoginUserDto dto)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
-            string dtoPasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password);
+            if (user == null) throw new Exception("Nieprawidłowe dane logowania");
 
-            if(user.Email != dto.Email && user.PasswordHash != dtoPasswordHash)
-                    throw new UnauthorizedAccessException("Nieprawidłowe dane logowania");
+
+            bool verified = BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash);
+            if (!verified)
+                throw new Exception("Nieprawidłowe dane logowania");
+
 
         }
 
+
+
+
+
         public async Task<IEnumerable<UserDto>> GetAll()
         {
-            var users = await _context.Users.ToListAsync();
+            var users = await _context.Users.Include(u => u.Profile).ToListAsync();
 
             return _mapper.Map<IEnumerable<UserDto>>(users);
         }

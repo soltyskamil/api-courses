@@ -8,6 +8,8 @@ namespace API_Managment_Courses.Interfaces
 
         Task LoginUser(LoginUserDto loginUserDto);
 
+       
+
         Task<IEnumerable<UserDto>> GetAll();
 
     }
