@@ -4,10 +4,13 @@ using API_Managment_Courses.Interfaces;
 using API_Managment_Courses.Mapping;
 using API_Managment_Courses.Models.Api;
 using API_Managment_Courses.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace API_Managment_Courses
 {
@@ -33,10 +36,44 @@ namespace API_Managment_Courses
             builder.Services.AddControllers(options =>
             {
                 options.Filters.AddService<ValidationFilterAttribute>();
-                options.Filters.AddService<GlobalExceptionFilter>();  
+                options.Filters.AddService<GlobalExceptionFilter>();
             }
             );
 
+
+            var key = builder.Configuration["Jwt:Key"];
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                        ValidAudience = builder.Configuration["Jwt:Audience"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
+                    };
+
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = ctx =>
+                        {
+                            if (string.IsNullOrEmpty(ctx.Token) && ctx.Request.Cookies.TryGetValue("jwt-token", out var token))
+                            {
+                                ctx.Token = token;
+                            }
+                            return Task.CompletedTask;
+
+                        }
+                    };
+                });
+            builder.Services.AddAuthorization();
 
 
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -52,9 +89,11 @@ namespace API_Managment_Courses
                 //app.UseSwaggerUI();
             }
 
+            app.UseAuthentication();
+            app.UseAuthorization();
             app.UseHttpsRedirection();
-      
-         
+
+
 
             app.UseAuthorization();
 

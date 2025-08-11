@@ -10,5 +10,7 @@ namespace API_Managment_Courses.Interfaces
 
         Task<IEnumerable<UserDto>> GetAll();
 
+
+        string CreateJwtToken(string UserEmail, IConfiguration config);
     }
 }
