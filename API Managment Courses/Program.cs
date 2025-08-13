@@ -4,10 +4,14 @@ using API_Managment_Courses.Interfaces;
 using API_Managment_Courses.Mapping;
 using API_Managment_Courses.Models.Api;
 using API_Managment_Courses.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace API_Managment_Courses
 {
@@ -33,10 +37,30 @@ namespace API_Managment_Courses
             builder.Services.AddControllers(options =>
             {
                 options.Filters.AddService<ValidationFilterAttribute>();
-                options.Filters.AddService<GlobalExceptionFilter>();  
+                options.Filters.AddService<GlobalExceptionFilter>();
             }
             );
 
+
+            var jwtSettings = builder.Configuration.GetSection("Jwt");
+            builder.Services.AddSingleton(jwtSettings);
+
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                                              .AddJwtBearer("scheme", jwtOptions =>
+                                              {
+                                                  jwtOptions.RequireHttpsMetadata = false;
+                                                  jwtOptions.SaveToken = true;
+                                                  //jwtOptions.Audience = builder.Configuration["Jwt:audience"];
+                                                  jwtOptions.TokenValidationParameters = new TokenValidationParameters
+                                                  {
+                                                      ValidateIssuer = false,
+                                                      //ValidateAudience = true,
+                                                      ValidateIssuerSigningKey = true,
+                                                      IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["key"])),
+                                                      ValidateLifetime = true,
+
+                                                  };
+                                              });
 
 
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -48,14 +72,12 @@ namespace API_Managment_Courses
             if (app.Environment.IsDevelopment())
             {
                 app.MapOpenApi();
-                //app.UseSwagger();
-                //app.UseSwaggerUI();
             }
 
             app.UseHttpsRedirection();
-      
-         
 
+
+            app.UseAuthentication();
             app.UseAuthorization();
 
 

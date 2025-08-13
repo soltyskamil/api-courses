@@ -25,7 +25,7 @@ namespace API_Managment_Courses.Controllers
             try
             {
                 var courses = await _services.GetAll();
-                if (courses.IsNullOrEmpty()) return BadRequest(new { message = "Tablica kursów jest pusta", success = false });
+                //if (courses.IsNullOrEmpty()) return BadRequest(new { message = "Tablica kursów jest pusta", success = false });
 
 
                 return Ok(new { data = courses, success = true });

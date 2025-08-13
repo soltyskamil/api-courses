@@ -169,3 +169,4 @@ C:\Users\kamil\source\repos\API Managment Courses\API Managment Courses\obj\Debu
 C:\Users\kamil\source\repos\API Managment Courses\API Managment Courses\bin\Debug\net9.0\AutoMapper.dll
 C:\Users\kamil\source\repos\API Managment Courses\API Managment Courses\bin\Debug\net9.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll
 C:\Users\kamil\source\repos\API Managment Courses\API Managment Courses\bin\Debug\net9.0\BCrypt.Net-Next.dll
+C:\Users\kamil\source\repos\API Managment Courses\API Managment Courses\bin\Debug\net9.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll

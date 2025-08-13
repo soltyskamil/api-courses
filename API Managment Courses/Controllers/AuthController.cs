@@ -1,5 +1,6 @@
 ﻿using API_Managment_Courses.Dtos;
 using API_Managment_Courses.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
@@ -39,12 +40,15 @@ namespace API_Managment_Courses.Controllers
 
         [HttpPost("login")]
 
-        public async Task<ActionResult> LoginUser(LoginUserDto dto)
+        public async Task<ActionResult<LoginResponseDto>> LoginUser(LoginUserDto dto)
         {
             try
             {
-                await _services.LoginUser(dto);
-                return Ok(dto);
+                LoginResponseDto resLoginDto = await _services.LoginUser(dto);
+               
+                Response.Cookies.Append("jwt_token", resLoginDto.Token);    
+
+                return Ok(resLoginDto);
             }
 
             catch (Exception ex)
@@ -54,6 +58,7 @@ namespace API_Managment_Courses.Controllers
             }
         }
 
+        [Authorize]
         [HttpGet]
 
         public async Task<ActionResult<IEnumerable<UserDto>>> GetAll()

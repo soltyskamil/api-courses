@@ -2,6 +2,10 @@
 using API_Managment_Courses.Interfaces;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace API_Managment_Courses.Services
 {
@@ -9,19 +13,20 @@ namespace API_Managment_Courses.Services
     {
         private readonly AppDbContext _context;
         private readonly IMapper _mapper;
+        private readonly IConfiguration _jwtSettings;
 
-
-        public AuthServices(AppDbContext context, IMapper mapper)
+        public AuthServices(AppDbContext context, IMapper mapper, IConfiguration jwtSettings)
         {
             _context = context;
             _mapper = mapper;
+            _jwtSettings = jwtSettings;
         }
 
 
         public async Task<UserDto> CreateUser(UserDto dto)
         {
-            if (await _context.Users.AnyAsync(u => u.Email == dto.Email)) throw new Exception("Użytkownik już istnieje");            
-           
+            if (await _context.Users.AnyAsync(u => u.Email == dto.Email)) throw new Exception("Użytkownik już istnieje");
+
             string passwordHash = BCrypt.Net.BCrypt.HashPassword(dto.password);
 
             var newUser = new User()
@@ -46,17 +51,23 @@ namespace API_Managment_Courses.Services
 
             await _context.SaveChangesAsync();
             return _mapper.Map<UserDto>(newUser);
-        } 
+        }
 
 
-        public async Task LoginUser(LoginUserDto dto)
+        public async Task<LoginResponseDto> LoginUser(LoginUserDto dto)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
-            string dtoPasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password);
+            User user = await _context.Users
+                .Include(u => u.Role)
+                .FirstOrDefaultAsync(u => u.Email == dto.Email);
+            if (user == null) throw new UnauthorizedAccessException("Nieprawidłowe dane logowania");
+            bool verify = BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash);
+            
+            if(!verify)
+                throw new UnauthorizedAccessException("Nieprawidłowe dane logowania");
+            string token = CreateToken(user);
 
-            if(user.Email != dto.Email && user.PasswordHash != dtoPasswordHash)
-                    throw new UnauthorizedAccessException("Nieprawidłowe dane logowania");
-
+            LoginResponseDto resLoginDto = new LoginResponseDto { UserID = user.ID, RoleName = user.Role.Name, Token = token };
+            return resLoginDto;
         }
 
         public async Task<IEnumerable<UserDto>> GetAll()
@@ -66,7 +77,35 @@ namespace API_Managment_Courses.Services
             return _mapper.Map<IEnumerable<UserDto>>(users);
         }
 
+        public string CreateToken(User user)
+        {
 
+            var token = new JwtSecurityTokenHandler();
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings["Jwt:key"]));
+            var audience = _jwtSettings["Jwt:audience"];
+            
+
+
+
+            var claims = new List<Claim>
+            {
+                new Claim("userId", user.ID.ToString()),
+                new Claim("role", user.Role.Name),
+            };
+
+            var signingCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var tokenOptions = new JwtSecurityToken(
+                issuer: _jwtSettings["Jwt:issuer"],
+                audience: audience,
+                claims: claims,
+                expires: DateTime.UtcNow.AddDays(7),
+                signingCredentials: signingCredentials
+            );
+
+            return token.WriteToken(tokenOptions);
+
+        }
 
     }
 }

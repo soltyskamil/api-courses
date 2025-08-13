@@ -6,9 +6,11 @@ namespace API_Managment_Courses.Interfaces
     {
         Task<UserDto> CreateUser(UserDto userDto);
 
-        Task LoginUser(LoginUserDto loginUserDto);
+        Task<LoginResponseDto> LoginUser(LoginUserDto loginUserDto);
 
         Task<IEnumerable<UserDto>> GetAll();
+
+        string CreateToken(User user);
 
     }
 }
