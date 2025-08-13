@@ -103,7 +103,7 @@ namespace API_Managment_Courses.Services
                 signingCredentials: signingCredentials
             );
 
-            return token.WriteToken(tokenOptions);
+            return new JwtSecurityTokenHandler().WriteToken(tokenOptions);
 
         }
 

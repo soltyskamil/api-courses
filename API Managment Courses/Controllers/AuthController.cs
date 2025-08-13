@@ -58,6 +58,7 @@ namespace API_Managment_Courses.Controllers
             }
         }
 
+
         [Authorize]
         [HttpGet]
 
@@ -65,6 +66,8 @@ namespace API_Managment_Courses.Controllers
         {
             try
             {
+
+
                 var users = await _services.GetAll();
                 return Ok(users);
 

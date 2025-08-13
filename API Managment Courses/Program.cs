@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -34,6 +35,19 @@ namespace API_Managment_Courses
             builder.Services.AddScoped<GlobalExceptionFilter>();
             builder.Services.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
 
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowLocalhost",
+                    policy => policy.WithOrigins("http://localhost:5173") // Dodaj URL swojego frontendu
+                                   .AllowAnyMethod()
+                    .AllowAnyHeader());
+            });
+
+
+
+
+
             builder.Services.AddControllers(options =>
             {
                 options.Filters.AddService<ValidationFilterAttribute>();
@@ -45,22 +59,39 @@ namespace API_Managment_Courses
             var jwtSettings = builder.Configuration.GetSection("Jwt");
             builder.Services.AddSingleton(jwtSettings);
 
-            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
                                               .AddJwtBearer("scheme", jwtOptions =>
                                               {
                                                   jwtOptions.RequireHttpsMetadata = false;
                                                   jwtOptions.SaveToken = true;
-                                                  //jwtOptions.Audience = builder.Configuration["Jwt:audience"];
+                                                  jwtOptions.Audience = builder.Configuration["Jwt:audience"];
                                                   jwtOptions.TokenValidationParameters = new TokenValidationParameters
                                                   {
                                                       ValidateIssuer = false,
-                                                      //ValidateAudience = true,
+                                                      ValidateAudience = true,
                                                       ValidateIssuerSigningKey = true,
                                                       IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["key"])),
                                                       ValidateLifetime = true,
 
                                                   };
+
+                                                  jwtOptions.Events = new JwtBearerEvents
+                                                  {
+                                                      OnMessageReceived = ctx =>
+                                                      {
+                                                          if (string.IsNullOrEmpty(ctx.Token) && ctx.Request.Cookies.TryGetValue("jwt-token", out var token))
+                                                          {
+                                                              ctx.Token = token;
+                                                          }
+                                                          return Task.CompletedTask;
+
+                                                      }
+                                                  };
                                               });
+            builder.Services.AddAuthorization();
 
 
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -75,12 +106,13 @@ namespace API_Managment_Courses
             }
 
             app.UseHttpsRedirection();
-
-
+            app.UseCors(x => x
+                                .AllowAnyMethod()
+                                .AllowAnyHeader()
+                                .SetIsOriginAllowed(origin => true)
+                                .AllowCredentials());
             app.UseAuthentication();
             app.UseAuthorization();
-
-
             app.MapControllers();
 
             app.Run();
